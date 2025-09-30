@@ -2,151 +2,133 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JavaScript Mini Web Application</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript Mini Web Application</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
+  <form id="user_form">
+    <h2 style="text-align: center;">USER FORM</h2>
+    <div class="error" id="error_msg"></div>
 
-    <form id="user_form">
-        <h2 style="text-align: center;">USER FORM</h2>
-        <div class="error" id="error_msg"> </div>
-        <label> Name:</label>
-        <input type="text" id="name" required><br>
+    <label>Name:</label>
+    <input type="text" id="name" name="name" required><br>
 
-        <label> Email:</label>
-        <input type="email" id="email" required><br>
+    <label>Email:</label>
+    <input type="email" id="email" name="email" required><br>
 
-        <label> Age:</label>
-        <input type="number" id="age" required><br>
+    <label>Age:</label>
+    <input type="number" id="age" name="age" required><br>
 
-        <label> Address:</label>
-        <input type="text" id="address" required><br>
+    <label>Address:</label>
+    <input type="text" id="address" name="address" required><br>
 
-        <label>Gender</label>
-        <select id="gender">
-            <option value=" "> select..</option>
-            <option value="f"> Female</option>
-            <option value="m">Male</option>
-            <option value="other"> Other</option>
-        </select><br><br>
+    <label>Gender</label>
+    <select id="gender" name="gender">
+      <option value="">select..</option>
+      <option value="f">Female</option>
+      <option value="m">Male</option>
+      <option value="other">Other</option>
+    </select><br><br>
 
-        <label>Comments</label>
-        <textarea id="comments"></textarea><br><br>
+    <label>Comments</label>
+    <textarea id="comments" name="comments"></textarea><br><br>
 
-        <div class="button1">
-            <button type="submit" style="background-color: rgb(96, 204, 96);">Submit</button>
-            <button type="button" class="clear-btn" id="clear_all" style="background-color: rgb(245, 169, 118);"> Clear All</button>
-        </div>
-    </form>
+    <div class="button1">
+      <button type="submit" style="background-color: rgb(96, 204, 96);">Submit</button>
+      <button type="button" id="clear_all" style="background-color: rgb(245, 169, 118);">Clear All</button>
+    </div>
+  </form>
 
-    <table id="user_table">
-        <thead>
-            <tr>
-                <th>Name:</th>
-                <th>Email:</th>
-                <th>Age:</th>
-                <th>Address: </th>
-                <th>Gender:</th>
-                <th>Comments: </th>
-            </tr>
-        </thead>
-        <tbody> </tbody>
-    </table>
+  <table id="user_table">
+    <thead>
+      <tr>
+        <th>Name:</th>
+        <th>Email:</th>
+        <th>Age:</th>
+        <th>Address:</th>
+        <th>Gender:</th>
+        <th>Comments:</th>
+        <th>Action:</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
+  <script>
+    const form = document.getElementById('user_form');
+    const error_msg = document.getElementById('error_msg');
+    const table_body = document.querySelector('#user_table tbody');
+    const clear_all = document.getElementById('clear_all');
 
-    <script>
-        const form = document.getElementById('user_form');
-        const error_msg = document.getElementById('error_msg');
-        const table_body = document.querySelector('#user_table tbody');
-        const clear_all = document.getElementById('clear_all');
+    document.addEventListener("DOMContentLoaded", loadData);
 
-        document.addEventListener("DOMContentLoaded", loadData);
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const name = form.elements['name'].value.trim();
+      const email = form.elements['email'].value.trim();
+      const age = parseInt(form.elements['age'].value);
+      const address = form.elements['address'].value.trim();
+      const gender = form.elements['gender'].value;
+      const comments = form.elements['comments'].value.trim();
 
-        form.addEventListener('submit', (event) => {
-            event.preventDefault();
+      if (!name || !email || !age || !address || !gender) {
+        error_msg.textContent = "All fields except comments are required!";
+        return;
+      }
 
-            // Get form data
-            const name = form.elements['name'].value.trim();
-            const email = form.elements['email'].value.trim();
-            const age = parseInt(form.elements['age'].value);
-            const address = form.elements['address'].value.trim();
-            const gender = form.elements['gender'].value;
-            const comments = form.elements['comments'].value.trim();
+      if (age < 18) {
+        error_msg.textContent = "Age must be at least 18.";
+        return;
+      }
 
-            // Validate form data
-            if (!name || !email || !age || !address || !gender) {
-                error_msg.textContent = "All fields except comments are required!";
-                return;
-            }
+      if (!/\S+@\S+\.\S+/.test(email)) {
+        error_msg.textContent = "Invalid email format.";
+        return;
+      }
 
-            if (age < 18) {
-                error_msg.textContent = "Age must be at least 18.";
-                return;
-            }
+      error_msg.textContent = "";
 
-            if (!/\S+@\S+\.\S+/.test(email)) {
-                error_msg.textContent = "Invalid email Format.";
-                return;
-            }
-            error_msg.textContent = " ";
+      let users = JSON.parse(localStorage.getItem('users')) || [];
+      users.push({ name, email, age, address, gender, comments });
+      localStorage.setItem('users', JSON.stringify(users));
 
-            // Retrieve existing users from localStorage
-            let users = JSON.parse(localStorage.getItem('users')) || [];
+      loadData();
+      form.reset();
+    });
 
-            // Add new user to the array
-            users.push({
-                name,
-                email,
-                age,
-                address,
-                gender,
-                comments
-            });
+    function loadData() {
+      let users = JSON.parse(localStorage.getItem('users')) || [];
+      table_body.innerHTML = "";
+      users.forEach((user, index) => {
+        let row = `<tr>
+          <td>${user.name}</td>
+          <td>${user.email}</td>
+          <td>${user.age}</td>
+          <td>${user.address}</td>
+          <td>${user.gender}</td>
+          <td>${user.comments}</td>
+          <td><button onclick="deleteUser(${index})">Delete</button></td>
+        </tr>`;
+        table_body.innerHTML += row;
+      });
+    }
 
-            // Save updated users array to localStorage
-            localStorage.setItem('users', JSON.stringify(users));
+    function deleteUser(index) {
+      let users = JSON.parse(localStorage.getItem('users')) || [];
+      users.splice(index, 1);
+      localStorage.setItem('users', JSON.stringify(users));
+      loadData();
+    }
 
-            // Reload the table data
-            loadData();
-
-            // Reset the form
-            form.reset();
-        });
-
-        function loadData() {
-            let users = JSON.parse(localStorage.getItem('users')) || [];
-            table_body.innerHTML = " ";
-
-            users.forEach((user, index) => {
-                let row = `<tr>
-                    <td>${user.name}</td>
-                    <td>${user.email}</td>
-                    <td>${user.age}</td>
-                    <td>${user.address}</td>
-                    <td>${user.gender}</td>
-                    <td>${user.comments}</td>
-                    <td> <button class =" delete-btn" onclick= "deleteuser(${index})">Delete </button> </td>
-                </tr>`;
-                table_body.innerHTML += row;
-
-            });
-        }
-
-        function deleteuser(index) {
-            let users = JSON.parse(localStorage.getItem('users')) || [];
-            users.splice(index, 1);
-            localStorage.setItem('users', JSON.stringify(users));
-            loadData();
-        }
-        clear_all.addEventListener('click', () => {
-            localStorage.removeItem('users');
-            loadData();
-        });
-    </script>
-
+    clear_all.addEventListener('click', () => {
+      localStorage.removeItem('users');
+      table_body.innerHTML = "";
+      form.reset();
+      error_msg.textContent = "";
+    });
+  </script>
 </body>
-
 </html>
