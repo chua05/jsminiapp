@@ -41,11 +41,13 @@ button:hover {
 table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; 
+    table-layout: fixed;
     margin-top: 20px;
     text-align: center;
     font-size: 14px;
     background: white;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 #user_table thead {
@@ -54,55 +56,62 @@ table {
     background: #6090f7;
     color: white;
     z-index: 2;
-  }
+}
 
 th,
 td {
     border: 1px solid #ddd;
-    padding: 8px 10px; 
+    padding: 8px 10px;
     text-align: center;
     word-wrap: break-word;
 }
-
 
 #user_table th:nth-child(5),
 #user_table td:nth-child(5) {
     text-align: center;
 }
 
-/* Action column: align buttons to the right and compact */
 #user_table th:last-child {
     text-align: center;
 }
 
 #user_table td:last-child {
+    display: table-cell;
+    vertical-align: middle;
     text-align: center;
-    white-space: nowrap;
-    min-width: 90px;
+    padding: 8px 10px;
+    min-width: 120px;
+    border-right: 1px solid #ddd;
 }
 
-#user_table td:last-child {
-    display: flex;
-    justify-content: flex-end;
+#user_table td:last-child div {
+    display: inline-flex;
+    justify-content: center;
     align-items: center;
     gap: 8px;
 }
 
-#user_table td:last-child button {
+
+#user_table td:last-child button,
+#user_table td:last-child .btn-update,
+#user_table td:last-child .btn-cancel {
     padding: 6px 10px;
     font-size: 12px;
     line-height: 1.2;
     border: 1px solid #ccc;
     border-radius: 4px;
-    background: #f7f7f7;
     cursor: pointer;
+    width: auto;
+    margin: 0 2px;
 }
 
-#user_table td:last-child button:hover {
+#user_table td:last-child button:hover,
+#user_table td:last-child .btn-update:hover,
+#user_table td:last-child .btn-cancel:hover {
     background: #eaeaea;
 }
 
-/* Distinct colors for Edit and Delete */
+
 #user_table td:last-child .btn-edit {
     background: #3c72af;
     color: #fff;
@@ -123,10 +132,31 @@ td {
     background: #fb5f64;
 }
 
+
+#user_table td:last-child .btn-update {
+    background: #28a745;
+    color: #fff;
+    border-color: #28a745;
+}
+
+#user_table td:last-child .btn-update:hover {
+    background: #218838;
+}
+
+#user_table td:last-child .btn-cancel {
+    background: #6c757d;
+    color: #fff;
+    border-color: #6c757d;
+}
+
+#user_table td:last-child .btn-cancel:hover {
+    background: #5a6268;
+}
+
+
 th {
     background: #d8cba5;
     color: rgb(57, 57, 57);
-
 }
 
 .delete-btn {
@@ -157,7 +187,6 @@ th {
     max-width: none;
     margin: 0;
     margin-top: 30px;
-
 }
 
 .table-card {
@@ -165,21 +194,21 @@ th {
     padding: 25px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border: 1px solid #ddd; 
-    width: 90%;           
-    max-width: 1200px;    
-    height: 600px;        
-    margin: 20px auto;    
-    overflow-y: auto;     
-  }
-  
+    border: 1px solid #ddd;
+    width: 90%;
+    max-width: 1200px;
+    height: 600px;
+    margin: 20px auto;
+    overflow-y: auto;
+}
+
 #user_table thead {
     position: sticky;
     top: 0;
     background: #60a1f7;
     color: white;
-    z-index: 2; 
-  }
+    z-index: 2;
+}
 
 .button1 {
     display: flex;
@@ -187,27 +216,47 @@ th {
     gap: 20px;
 }
 
-
-
-
 .side-by-side {
     display: flex;
     gap: 20px;
     align-items: flex-start;
-    flex-wrap: wrap; 
+    flex-wrap: wrap;
 }
 
 .side-by-side form {
-    flex: 0 0 400px; 
-    margin: 0;       
+    flex: 0 0 400px;
+    margin: 0;
 }
 
 .side-by-side #user_table {
     flex: 1 1 500px;
 }
 
-
 .side-by-side .table-card {
     flex: 1 1 700px;
 }
 
+#user_table td {
+    vertical-align: middle;
+    height: 50px;
+}
+
+#user_table tr td input,
+#user_table tr td select,
+#user_table tr td textarea {
+    height: 32px;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+#user_table td:last-child .btn-update,
+#user_table td:last-child .btn-cancel {
+    padding: 4px 8px;
+    font-size: 12px;
+    line-height: 1;
+}
+
+#user_table tr td textarea {
+    resize: none;
+    min-height: 32px;
+}
