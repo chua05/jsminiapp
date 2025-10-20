@@ -1,65 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JavaScript Mini Web Application</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JavaScript Mini Web App - Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
-
 <body>
-  <div class="side-by-side">
-  <form id="user_form">
-    <h2 style="text-align: center;">USER FORM</h2>
-    <div class="error" id="error_msg"></div>
+  
 
-    <label>Name:</label>
-    <input type="text" id="name" name="name" required><br>
+  <div class="layout">
 
-    <label>Email:</label>
-    <input type="email" id="email" name="email" required><br>
 
-    <label>Age:</label>
-    <input type="number" id="age" name="age" required><br>
+    <main class="main">
+      <section class="grid">
+        <div class="card form-card">
+          <div class="card-header">
+            <h2>USER FORM</h2>
+          </div>
 
-    <label>Address:</label>
-    <input type="text" id="address" name="address" required><br>
+          <div class="error" id="error_msg"></div>
 
-    <label>Gender:</label>
-    <select id="gender" name="gender">
-      <option value="">select..</option>
-      <option value="f">Female</option>
-      <option value="m">Male</option>
-      <option value="other">Other</option>
-    </select><br><br>
+          <form id="user_form" class="form">
+            <div class="form-row">
+              <label>Name</label>
+              <input type="text" id="name" name="name" required />
+            </div>
 
-    <label>Comments</label>
-    <textarea id="comments" name="comments"></textarea><br><br>
+            <div class="form-row">
+              <label>Email</label>
+              <input type="email" id="email" name="email" required />
+            </div>
 
-    <div class="button1">
-      <button id="submit_btn" type="submit" style="background-color: rgb(116, 195, 70);">Submit</button>
-      <button type="button" id="clear_all" style="background-color: rgb(225, 112, 84);">Clear All</button>
-      <button type="button" id="cancel_edit" style="display: none; background-color: #bbb;">Cancel Edit</button>
-    </div>
-  </form>
+            <div class="form-row">
+              <label>Age</label>
+              <input type="number" id="age" name="age" required />
+            </div>
 
-  <div class="table-card">
-    <table id="user_table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Age</th>
-          <th>Address</th>
-          <th>Gender</th>
-          <th>Comments</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+            <div class="form-row">
+              <label>Address</label>
+              <input type="text" id="address" name="address" required />
+            </div>
+
+            <div class="form-row">
+              <label>Gender</label>
+              <select id="gender" name="gender">
+                <option value="">select..</option>
+                <option value="f">Female</option>
+                <option value="m">Male</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label>Comments</label>
+              <textarea id="comments" name="comments"></textarea>
+            </div>
+
+            <div class="button-row">
+              <button id="submit_btn" class="btn primary" type="submit">Submit</button>
+              <button type="button" id="clear_all" class="btn">Clear</button>
+              <button type="button" id="cancel_edit" class="btn ghost" style="display: none;">Cancel Edit</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card table-card">
+          <div class="card-header">
+            <h2>Users</h2>
+            <div class="controls">
+              <input type="text" id="search_input" placeholder="Search by name..." />
+              <button id="sort_name" class="btn small">Sort</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table id="user_table" class="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Age</th>
+                  <th>Address</th>
+                  <th>Gender</th>
+                  <th>Comments</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
 
   <script>
@@ -69,56 +102,57 @@
     const clear_all = document.getElementById('clear_all');
     const submit_btn = document.getElementById('submit_btn');
     const cancel_edit = document.getElementById('cancel_edit');
+    const search_input = document.getElementById('search_input');
+    const sort_name_btn = document.getElementById('sort_name');
     let editIndex = null;
 
     document.addEventListener("DOMContentLoaded", loadData);
 
     form.addEventListener('submit', (event) => {
       event.preventDefault();
-      const name = form.elements['name'].value.trim();
-      const email = form.elements['email'].value.trim();
-      const age = parseInt(form.elements['age'].value);
-      const address = form.elements['address'].value.trim();
-      const gender = form.elements['gender'].value;
-      const comments = form.elements['comments'].value.trim();
+      const name = form.name.value.trim();
+      const email = form.email.value.trim();
+      const age = parseInt(form.age.value);
+      const address = form.address.value.trim();
+      const gender = form.gender.value;
+      const comments = form.comments.value.trim();
 
       if (!name || !email || !age || !address || !gender) {
         error_msg.textContent = "All fields except comments are required!";
         return;
       }
-
       if (age < 18) {
         error_msg.textContent = "Age must be at least 18.";
         return;
       }
-
       if (!/\S+@\S+\.\S+/.test(email)) {
         error_msg.textContent = "Invalid email format.";
         return;
       }
 
       error_msg.textContent = "";
-
       let users = JSON.parse(localStorage.getItem('users')) || [];
+
       if (editIndex !== null) {
         users[editIndex] = { name, email, age, address, gender, comments };
       } else {
         users.push({ name, email, age, address, gender, comments });
       }
-      localStorage.setItem('users', JSON.stringify(users));
 
-      loadData();
+      localStorage.setItem('users', JSON.stringify(users));
       form.reset();
       editIndex = null;
-      submit_btn.textContent = 'Submit';
-      cancel_edit.style.display = 'none';
+      submit_btn.textContent = "Submit";
+      cancel_edit.style.display = "none";
+      loadData();
     });
 
     function loadData() {
       let users = JSON.parse(localStorage.getItem('users')) || [];
       table_body.innerHTML = "";
       users.forEach((user, index) => {
-        let row = `<tr id="row-${index}">
+        let row = `
+        <tr>
           <td>${user.name}</td>
           <td>${user.email}</td>
           <td>${user.age}</td>
@@ -126,8 +160,8 @@
           <td>${user.gender}</td>
           <td>${user.comments}</td>
           <td>
-            <button class="btn-edit" onclick="editUserInTable(${index})">Edit</button>
-            <button class="btn-delete" onclick="deleteUser(${index})">Delete</button>
+            <button class="btn tiny" onclick="editUser(${index})">Edit</button>
+            <button class="btn tiny danger" onclick="deleteUser(${index})">Delete</button>
           </td>
         </tr>`;
         table_body.innerHTML += row;
@@ -135,124 +169,63 @@
     }
 
     function deleteUser(index) {
-      if (confirm('Are you sure you want to delete this user?')) {
+      if (confirm("Are you sure you want to delete this user?")) {
         let users = JSON.parse(localStorage.getItem('users')) || [];
-        const userName = users[index].name;
         users.splice(index, 1);
         localStorage.setItem('users', JSON.stringify(users));
         loadData();
-        alert(`User "${userName}" has been deleted successfully.`);
       }
-    }
-
-    function editUserInTable(index) {
-      let users = JSON.parse(localStorage.getItem('users')) || [];
-      const user = users[index];
-      if (!user) return;
-
-      const row = document.getElementById(`row-${index}`);
-      if (!row) return;
-
-      // Create input fields for editing
-      const nameInput = `<input type="text" value="${user.name}" id="edit-name-${index}" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px;">`;
-      const emailInput = `<input type="email" value="${user.email}" id="edit-email-${index}" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px;">`;
-      const ageInput = `<input type="number" value="${user.age}" id="edit-age-${index}" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px;">`;
-      const addressInput = `<input type="text" value="${user.address}" id="edit-address-${index}" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px;">`;
-      const genderSelect = `<select id="edit-gender-${index}" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px;">
-        <option value="" ${user.gender === '' ? 'selected' : ''}>select..</option>
-        <option value="f" ${user.gender === 'f' ? 'selected' : ''}>Female</option>
-        <option value="m" ${user.gender === 'm' ? 'selected' : ''}>Male</option>
-        <option value="other" ${user.gender === 'other' ? 'selected' : ''}>Other</option>
-      </select>`;
-      const commentsInput = `<textarea id="edit-comments-${index}" style="width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 3px; resize: vertical; min-height: 40px;">${user.comments || ''}</textarea>`;
-      
-      const actionButtons = `<button class="btn-update" onclick="updateUserInTable(${index})">Update</button>
-                            <button class="btn-cancel" onclick="cancelEditInTable(${index})">Cancel</button>`;
-
-      // Replace the row content with input fields
-      row.innerHTML = `
-        <td>${nameInput}</td>
-        <td>${emailInput}</td>
-        <td>${ageInput}</td>
-        <td>${addressInput}</td>
-        <td>${genderSelect}</td>
-        <td>${commentsInput}</td>
-        <td>${actionButtons}</td>
-      `;
-
-      // Focus on the first input field
-      document.getElementById(`edit-name-${index}`).focus();
-    }
-
-    function updateUserInTable(index) {
-      const name = document.getElementById(`edit-name-${index}`).value.trim();
-      const email = document.getElementById(`edit-email-${index}`).value.trim();
-      const age = parseInt(document.getElementById(`edit-age-${index}`).value);
-      const address = document.getElementById(`edit-address-${index}`).value.trim();
-      const gender = document.getElementById(`edit-gender-${index}`).value;
-      const comments = document.getElementById(`edit-comments-${index}`).value.trim();
-
-      // Validation
-      if (!name || !email || !age || !address || !gender) {
-        alert('All fields except comments are required!');
-        return;
-      }
-
-      if (age < 18) {
-        alert('Age must be at least 18.');
-        return;
-      }
-
-      if (!/\S+@\S+\.\S+/.test(email)) {
-        alert('Invalid email format.');
-        return;
-      }
-
-      // Update the user data
-      let users = JSON.parse(localStorage.getItem('users')) || [];
-      users[index] = { name, email, age, address, gender, comments };
-      localStorage.setItem('users', JSON.stringify(users));
-
-      // Reload the table to show updated data
-      loadData();
-      alert(`User "${name}" has been updated successfully.`);
-    }
-
-    function cancelEditInTable(index) {
-      // Simply reload the table to restore original data
-      loadData();
     }
 
     function editUser(index) {
       let users = JSON.parse(localStorage.getItem('users')) || [];
-      const user = users[index];
-      if (!user) return;
-      form.elements['name'].value = user.name;
-      form.elements['email'].value = user.email;
-      form.elements['age'].value = user.age;
-      form.elements['address'].value = user.address;
-      form.elements['gender'].value = user.gender;
-      form.elements['comments'].value = user.comments || '';
+      const u = users[index];
+      if (!u) return;
+      form.name.value = u.name;
+      form.email.value = u.email;
+      form.age.value = u.age;
+      form.address.value = u.address;
+      form.gender.value = u.gender;
+      form.comments.value = u.comments;
       editIndex = index;
-      submit_btn.textContent = 'Update';
-      cancel_edit.style.display = 'inline-block';
-      error_msg.textContent = '';
+      submit_btn.textContent = "Update";
+      cancel_edit.style.display = "inline-block";
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    clear_all.addEventListener('click', () => {
-      localStorage.removeItem('users');
-      table_body.innerHTML = "";
+    cancel_edit.addEventListener('click', () => {
       form.reset();
-      error_msg.textContent = "";
+      editIndex = null;
+      submit_btn.textContent = "Submit";
+      cancel_edit.style.display = "none";
     });
 
-    cancel_edit.addEventListener('click', () => {
-      editIndex = null;
-      form.reset();
-      submit_btn.textContent = 'Submit';
-      cancel_edit.style.display = 'none';
-      error_msg.textContent = '';
+    // clear form only (keeps saved records)
+    clear_all.addEventListener('click', () => {
+      if (confirm("Clear form fields?")) {
+        form.reset();
+        editIndex = null;
+        submit_btn.textContent = "Submit";
+        cancel_edit.style.display = "none";
+        error_msg.textContent = "";
+        form.name.focus();
+      }
+    });
+
+    search_input.addEventListener('input', () => {
+      const term = search_input.value.toLowerCase();
+      const rows = table_body.querySelectorAll('tr');
+      rows.forEach(row => {
+        const name = row.children[0].textContent.toLowerCase();
+        row.style.display = name.includes(term) ? "" : "none";
+      });
+    });
+
+    sort_name_btn.addEventListener('click', () => {
+      let users = JSON.parse(localStorage.getItem('users')) || [];
+      users.sort((a, b) => a.name.localeCompare(b.name));
+      localStorage.setItem('users', JSON.stringify(users));
+      loadData();
     });
   </script>
 </body>
